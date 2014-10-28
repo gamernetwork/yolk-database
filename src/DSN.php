@@ -13,6 +13,17 @@ namespace yolk\database;
 
 use yolk\database\exceptions\ConfigurationException;
 
+/**
+ * Describes database connection details.
+ *
+ * @property-read string $type type of database being connected to
+ * @property-read string $host hostname or ip address of database server
+ * @property-read string $port network port to connect on
+ * @property-read string $user user name used for authentication
+ * @property-read string $pass password used for authentication
+ * @property-read string $db   name of the database schema to use
+ * @property-read array  $options array of database specific options
+ */
 class DSN {
 
 	const TYPE_MYSQL  = 'mysql';

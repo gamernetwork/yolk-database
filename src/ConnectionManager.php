@@ -11,6 +11,7 @@
 
 namespace yolk\database;
 
+use yolk\contracts\database\ConnectionInterface;
 use yolk\contracts\database\ConnectionManagerInterface;
 
 use yolk\database\exceptions\DatabaseException;
@@ -33,7 +34,7 @@ class ConnectionManager implements ConnectionManagerInterface {
 		elseif( $connection instanceof ConnectionInterface )
 			$this->connections[$name] = $connection;
 		else
-			throw new \InvalidArgumentException(sprintf('\\%s expects instance of \\yolk\\database\\DSN or \\yolk\\database\\ConnectionInterface', __METHOD__));
+			throw new \InvalidArgumentException(sprintf('\\%s expects instance of \\yolk\\database\\DSN or \\yolk\\contracts\\database\\ConnectionInterface', __METHOD__));
 
 		return $this->connections[$name];
 
@@ -89,7 +90,7 @@ class ConnectionManager implements ConnectionManagerInterface {
 		elseif( is_array($dsn) )
 			return new DSN($dsn);
 		else
-			throw exceptions\ConfigurationException('Invalid DSN: '. $dsn);
+			throw new ConfigurationException('Invalid DSN: '. $dsn);
 	}
 
 	/**

@@ -55,7 +55,7 @@ abstract class AbstractConnection implements ConnectionInterface {
 
 		// check the PDO driver is available
 		elseif( !in_array($this->dsn->type, \PDO::getAvailableDrivers()) )
-			throw new DatabaseException("The {$this->config['scheme']} adapter is not currently installed");
+			throw new DatabaseException("The {$this->dsn->scheme} adapter is not currently installed");
 
 	}
 
@@ -76,13 +76,10 @@ abstract class AbstractConnection implements ConnectionInterface {
 			$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 			$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);           // always use exceptions
 
-			// make sure we're using the correct character-set:
-			if( isset($this->dsn->options['charset']) ) {
-				$sql = "SET NAMES '{$this->dsn->options['charset']}'";
-				if( isset($this->dsn->options['collate']) )
-					$sql .= " COLLATE '{$this->dsn->options['collate']}'";
-				$this->pdo->exec($sql);
-			}
+			$this->setCharacterSet(
+				$this->getOption('charset', 'UTF8'),
+				$this->getOption('collation')
+			);
 
 		}
 		catch( \PDOException $e ) {
@@ -335,6 +332,33 @@ abstract class AbstractConnection implements ConnectionInterface {
 		// TODO: store in cache
 
 		return $result;
+
+	}
+
+	protected function getOption( $option, $default = null ) {
+		return isset($this->dsn->options[$option]) ? $this->dsn->options[$option] : $default;
+	}
+
+	/**
+	 * Make sure the connection is using the correct character set
+	 * 
+	 * @param string $charset   the character set to use for the connection
+	 * @param string $collation the collation method to use for the connection
+	 * @return self
+	 */
+	protected function setCharacterSet( $charset, $collation = '' ) {
+
+		if( !$charset ) 
+			throw new DatabaseException('No character set specified');
+
+		$sql = 'SET NAMES '. $this->pdo->quote($charset);
+
+		if( $collation )
+			$sql .= ' COLLATE '. $this->pdo->quote($collation);
+
+		$this->pdo->exec($sql);
+
+		return $this;
 
 	}
 
