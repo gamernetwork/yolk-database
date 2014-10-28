@@ -6,11 +6,11 @@ It currently supports MySQL, Postgres and SQLite.
 
 ## Requirements
 
-This library requires only PHP 5.4 or later.
+This library requires only PHP 5.4 or later and the Yolk Contracts package (```gamernetwork/yolk-contracts```).
 
 ## Installation
 
-It is installable and autoloadable via Composer as gamer-network/yolk-database.
+It is installable and autoloadable via Composer as ```gamernetwork/yolk-database```.
 
 Alternatively, download a release or clone this repository, and add the \yolk\database namespace to an autoloader.
 
@@ -31,10 +31,16 @@ $dsn = DSN::fromString('mysql://localhost/mydb');
 $db = new MySQLConnection($dsn);
 
 // get some data
-$users = $db->getAssoc("SELECT * FROM users WHERE login = ?", 123);
+$user = $db->getAssoc("SELECT * FROM users WHERE user_id = ?", 123);
 
 // update some data
-$updated = $db->execute("UPDATE users SET last_seen = NOW() WHERE id = :id". ['id' => 123]);
+$updated = $db->execute(
+    "UPDATE users SET last_seen = :now WHERE id = :id",
+    [
+        'id'  => 123,
+        'now' => date('Y-m-d H:i:s'),
+    ]
+);
 ```
 
 ## DSNs
@@ -91,23 +97,90 @@ $exists = $m->has('mydb1');
 
 // retrieve a previously added connection
 $db = $m->get('mydb1');
+
+// remove a connection from the manager and return it
+// NOTE: this does not disconnect the connection
+$db = $m->remove('mydb1');
 ```
 
-## Connection Method Reference
+## Query Method Reference
 
+```php
+ // Execute a query and return the resulting PDO_Statement
+$stmt = $db->query($statement, $params = []);
 
-query( $statement, $params = array() );
+// Execute a query and return the number of affected rows
+$rows = $db->execute($statement, $params = []);
 
-execute( $statement, $params = array() );
+// Execute a query and return all matching data
+$db->getAll($statement, $params = []);
 
-getAll( $statement, $params = array(), $expires = 0, $key = '' );
+// Execute a query and return all matching data as an associative array,
+// the first selected column is used as the array key
+$db->getAssoc($statement, $params = []);
 
-getAssoc( $statement, $params = array(), $expires = 0, $key = '' );
+// Execute a query and return all matching data as a two-dimensioanl
+// associative array, the first two selected columns are used as the array keys
+$db->getAssocMulti($statement, $params = []);
 
-getAssocMulti( $statement, $params = array(), $expires = 0, $key = '' );
+// Execute a query and return the first matching row as an associative array
+$db->getRow($statement, $params = []);
 
-getRow( $statement, $params = array(), $expires = 0, $key = '' );
+// Execute a query and return all values of the first selected column as an array
+$db->getCol($statement, $params = []);
 
-getCol( $statement, $params = array(), $expires = 0, $key = '' );
+// Execute a query and return the value of the first column in the first array
+$db->getOne($statement, $params = []);
 
-getOne( $statement, $params = array(), $expires = 0, $key = '' );
+```
+
+The above methods accept the following parameters:
+* ```$statement```: a ```PDO_Statement``` instance or a SQL string
+* ```$params```: an array of parameters to bind to the statement
+
+Query parameters may be bound name:
+```php
+$user_id = $db->getOne(
+    "SELECT id FROM user WHERE type = :type AND name LIKE :name", 
+    [
+        'type' => 'NORMAL',
+        'name' => 'Jim%',
+    ]
+);
+```
+ or by position:
+```php
+$user_id = $db->getOne(
+    "SELECT id FROM user WHERE type = ? AND name LIKE ?",
+    ['NORMAL',, 'Jim%']
+);
+```
+If the query has only a single parameter it may be specified directly and will
+be automatically converted to a positional parameter:
+```php
+$user_id = $db->getOne("SELECT id FROM user WHERE login = ?", 'jimbob');
+```
+
+## Other Methods
+```php
+// Returns the ID of the last inserted row or sequence value.
+$id = $db->insertId($name = '');
+
+// Escape/quote a value for use in a query string
+$db->escape($value, $type = \PDO::PARAM_STR)
+```
+
+## Transactions
+```php
+// Begin a transaction
+$db->begin()
+
+// Commit the current transaction
+$db->commit()
+
+// Rollback the current transaction
+$db->rollback()
+
+// Determines if a transaction is currently active
+$db->inTransaction()
+```
