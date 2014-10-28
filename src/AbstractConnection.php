@@ -11,6 +11,8 @@
 
 namespace yolk\database;
 
+use yolk\contracts\database\ConnectionInterface;
+
 use yolk\database\exceptions\DatabaseException;
 use yolk\database\exceptions\ConnectionException;
 use yolk\database\exceptions\TransactionException;
@@ -18,7 +20,7 @@ use yolk\database\exceptions\TransactionException;
 /**
  * A wrapper for PDO that provides some handy extra functions and streamlines everything else.
  */
-abstract class AbstractConnection /*implements ConnectionInterface */{
+abstract class AbstractConnection implements ConnectionInterface {
 
 	/**
 	 * Connection details.
