@@ -14,6 +14,12 @@ namespace yolk\database\exceptions;
 /**
  * Base database exception.
  */
-class DatabaseException extends \Exception {}
+class DatabaseException extends \Exception {
+
+	public function __construct( $message = 'An unknown database error occured', $code = 0, \Exception $previous = null ) {
+		parent::__construct($message, $code, $previous);
+	}
+
+}
 
 // EOF

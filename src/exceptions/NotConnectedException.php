@@ -14,9 +14,9 @@ namespace yolk\database\exceptions;
 /**
  * Thrown if a database configuration is invalid.
  */
-class ConfigurationException extends DatabaseException {
+class NotConnectedException extends DatabaseException {
 
-	public function __construct( $message = 'The specified database configuration is invalid', $code = 0, \Exception $previous = null ) {
+	public function __construct( $message = 'The database is not connected', $code = 0, \Exception $previous = null ) {
 		parent::__construct($message, $code, $previous);
 	}
 

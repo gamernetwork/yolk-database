@@ -15,6 +15,7 @@ use yolk\contracts\database\ConnectionInterface;
 
 use yolk\database\exceptions\DatabaseException;
 use yolk\database\exceptions\ConnectionException;
+use yolk\database\exceptions\NotConnectedException;
 use yolk\database\exceptions\TransactionException;
 
 /**
@@ -51,11 +52,11 @@ abstract class AbstractConnection implements ConnectionInterface {
 
 		// check for PDO extension
 		if( !extension_loaded('pdo') )
-			throw new DatabaseException('The PDO extension is required for this adapter but the extension is not loaded');
+			throw new DatabaseException('The PDO extension is required but the extension is not loaded');
 
 		// check the PDO driver is available
 		elseif( !in_array($this->dsn->type, \PDO::getAvailableDrivers()) )
-			throw new DatabaseException("The {$this->dsn->scheme} adapter is not currently installed");
+			throw new DatabaseException("The {$this->dsn->type} PDO driver is not currently installed");
 
 	}
 
@@ -235,24 +236,44 @@ abstract class AbstractConnection implements ConnectionInterface {
 	}
 
 	public function begin() {
+
 		$this->connect();
-		return $this->pdo->beginTransaction();
+
+		try {
+			return $this->pdo->beginTransaction();
+		}
+		catch( \PDOException $e ) {
+			throw new TransactionException($e->getMessage(), $e->getCode(), $e);
+		}
+
 	}
 
 	public function commit() {
+
 		if( !$this->isConnected() )
-			throw new TransactionException('Database not connected');
-		if( !$this->pdo->inTransaction() )
-			throw new TransactionException('No active transaction');
-		return $this->pdo->commit();
+			throw new NotConnectedException();
+
+		try {
+			return $this->pdo->commit();
+		}
+		catch( \PDOException $e ) {
+			throw new TransactionException($e->getMessage(), $e->getCode(), $e);
+		}
+
 	}
 
 	public function rollback() {
+
 		if( !$this->isConnected() )
-			throw new TransactionException('Database not connected');
-		if( !$this->pdo->inTransaction() )
-			throw new TransactionException('No active transaction');
-		return $this->pdo->rollBack();
+			throw new NotConnectedException();
+
+		try {
+			return $this->pdo->rollBack();
+		}
+		catch( \PDOException $e ) {
+			throw new TransactionException($e->getMessage(), $e->getCode(), $e);
+		}
+
 	}
 
 	public function inTransaction() {
@@ -261,7 +282,7 @@ abstract class AbstractConnection implements ConnectionInterface {
 
 	public function insertId( $name = '' ) {
 		if( !$this->isConnected() )
-			throw new DatabaseException('Database not connected');
+			throw new NotConnectedException();
 		return $this->pdo->lastInsertId($name);
 	}
 

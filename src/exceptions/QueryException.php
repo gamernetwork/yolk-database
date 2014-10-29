@@ -12,8 +12,14 @@
 namespace yolk\database\exceptions;
 
 /**
- * Thrown if an error occurs during a transaction.
+ * Thrown if an error occurs whilst executing a query.
  */
-class QueryException extends DatabaseException {}
+class QueryException extends DatabaseException {
+
+	public function __construct( $message = 'An error occured executing a database query', $code = 0, \Exception $previous = null ) {
+		parent::__construct($message, $code, $previous);
+	}
+
+}
 
 // EOF

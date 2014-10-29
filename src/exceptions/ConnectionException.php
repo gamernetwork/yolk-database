@@ -12,8 +12,14 @@
 namespace yolk\database\exceptions;
 
 /**
- * Thrown if a database configuration is invalid.
+ * Thrown if a database connection could not be established.
  */
-class ConnectionException extends DatabaseException {}
+class ConnectionException extends DatabaseException {
+
+	public function __construct( $message = 'An error occured attempting to connect to the database', $code = 0, \Exception $previous = null ) {
+		parent::__construct($message, $code, $previous);
+	}
+
+}
 
 // EOF
