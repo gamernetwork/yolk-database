@@ -16,8 +16,15 @@ namespace yolk\database\exceptions;
  */
 class DatabaseException extends \Exception {
 
+	/**
+	 * https://bugs.php.net/bug.php?id=51742
+	 * @var integer|string
+	 */
+	protected $code;
+
 	public function __construct( $message = 'An unknown database error occured', $code = 0, \Exception $previous = null ) {
-		parent::__construct($message, $code, $previous);
+		parent::__construct($message, (int) $code, $previous);
+		$this->code = $code;
 	}
 
 }

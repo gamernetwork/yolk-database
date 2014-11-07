@@ -16,6 +16,7 @@ use yolk\contracts\database\ConnectionInterface;
 use yolk\database\exceptions\DatabaseException;
 use yolk\database\exceptions\ConnectionException;
 use yolk\database\exceptions\NotConnectedException;
+use yolk\database\exceptions\QueryException;
 use yolk\database\exceptions\TransactionException;
 
 /**
