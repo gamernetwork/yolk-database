@@ -29,12 +29,10 @@ class ConnectionManager implements ConnectionManagerInterface {
 
 		$this->checkName($name);
 
-		if( $connection instanceof DSN )
-			$this->connections[$name] = $this->create($connection);
-		elseif( $connection instanceof ConnectionInterface )
+		if( $connection instanceof ConnectionInterface )
 			$this->connections[$name] = $connection;
 		else
-			throw new \InvalidArgumentException(sprintf('\\%s expects instance of \\yolk\\database\\DSN or \\yolk\\contracts\\database\\ConnectionInterface', __METHOD__));
+			$this->connections[$name] = $this->create($connection);
 
 		return $this->connections[$name];
 
