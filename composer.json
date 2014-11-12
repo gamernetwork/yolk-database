@@ -19,12 +19,6 @@
         "phpunit/phpunit": "4.*",
         "sami/sami": "1.4.*@dev"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url":  "git@github.com:gamernetwork/yolk-contracts.git"
-        }
-    ],
     "autoload": {
     	"psr-4": {
             "yolk\\database\\": "src/"
