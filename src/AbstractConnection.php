@@ -12,6 +12,8 @@
 namespace yolk\database;
 
 use yolk\contracts\database\ConnectionInterface;
+use yolk\contracts\profiler\ProfilerAwareTrait;
+use yolk\contracts\profiler\ProfilerAwareInterface;
 
 use yolk\database\exceptions\DatabaseException;
 use yolk\database\exceptions\ConnectionException;
@@ -22,7 +24,9 @@ use yolk\database\exceptions\TransactionException;
 /**
  * A wrapper for PDO that provides some handy extra functions and streamlines everything else.
  */
-abstract class AbstractConnection implements ConnectionInterface {
+abstract class AbstractConnection implements ConnectionInterface, ProfilerAwareInterface {
+
+	use ProfilerAwareTrait;
 
 	/**
 	 * Connection details.
@@ -106,6 +110,7 @@ abstract class AbstractConnection implements ConnectionInterface {
 		$this->connect();
 
 		// TODO: profiler start
+		$this->profiler && $this->profiler->start('Query');
 
 		try {
 
@@ -127,6 +132,11 @@ abstract class AbstractConnection implements ConnectionInterface {
 		}
 
 		// TODO: profiler stop + record
+		if( $this->profiler ) {
+			$this->profiler->stop('Query');
+			// remove all whitespace at start of lines
+			$this->profiler->query(preg_replace("/^\s*/m", "", trim($statement->queryString)), $params, $duration);
+		}
 
 		return $statement;
 
