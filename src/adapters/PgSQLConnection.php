@@ -15,7 +15,7 @@ use yolk\database\AbstractConnection;
 use yolk\database\DSN;
 use yolk\database\exceptions\ConfigurationException;
 
-class MySQLConnection extends AbstractConnection {
+class PgSQLConnection extends AbstractConnection {
 
 	public function __construct( DSN $dsn ) {
 
