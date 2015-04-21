@@ -152,7 +152,7 @@ $user_id = $db->getOne(
 ```php
 $user_id = $db->getOne(
     "SELECT id FROM user WHERE type = ? AND name LIKE ?",
-    ['NORMAL',, 'Jim%']
+    ['NORMAL', 'Jim%']
 );
 ```
 If the query has only a single parameter it may be specified directly and will
