@@ -11,9 +11,9 @@
 
 namespace yolk\database;
 
-use yolk\contracts\database\ConnectionInterface;
+use yolk\contracts\database\DatabaseConnection;
 use yolk\contracts\profiler\ProfilerAwareTrait;
-use yolk\contracts\profiler\ProfilerAwareInterface;
+use yolk\contracts\profiler\ProfilerAware;
 
 use yolk\database\exceptions\DatabaseException;
 use yolk\database\exceptions\ConnectionException;
@@ -24,7 +24,7 @@ use yolk\database\exceptions\TransactionException;
 /**
  * A wrapper for PDO that provides some handy extra functions and streamlines everything else.
  */
-abstract class AbstractConnection implements ConnectionInterface, ProfilerAwareInterface {
+abstract class BaseConnection implements DatabaseConnection, ProfilerAware {
 
 	use ProfilerAwareTrait;
 

@@ -11,13 +11,13 @@
 
 namespace yolk\database;
 
-use yolk\contracts\database\ConnectionInterface;
-use yolk\contracts\database\ConnectionManagerInterface;
+use yolk\contracts\database\DatabaseConnection;
+use yolk\contracts\database\ConnectionManager;
 
 use yolk\database\exceptions\DatabaseException;
 use yolk\database\exceptions\ConfigurationException;
 
-class ConnectionManager implements ConnectionManagerInterface {
+class GenericConnectionManager implements ConnectionManager {
 
 	/**
 	 * Array of database connections
@@ -29,7 +29,7 @@ class ConnectionManager implements ConnectionManagerInterface {
 
 		$this->checkName($name);
 
-		if( $connection instanceof ConnectionInterface )
+		if( $connection instanceof DatabaseConnection )
 			$this->connections[$name] = $connection;
 		else
 			$this->connections[$name] = $this->create($connection);
@@ -52,9 +52,9 @@ class ConnectionManager implements ConnectionManagerInterface {
 	}
 
 	/**
-	 * Create a suitable implementation of ConnectionInterface based on the specified DSN.
+	 * Create a suitable implementation of DatabaseConnection based on the specified DSN.
 	 * @param  mixed $dsn
-	 * @return ConnectionInterface
+	 * @return DatabaseConnection
 	 */
 	protected function create( $dsn ) {
 

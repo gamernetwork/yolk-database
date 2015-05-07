@@ -11,11 +11,11 @@
 
 namespace yolk\database\adapters;
 
-use yolk\database\AbstractConnection;
+use yolk\database\BaseConnection;
 use yolk\database\DSN;
 use yolk\database\exceptions\ConfigurationException;
 
-class PgSQLConnection extends AbstractConnection {
+class PgSQLConnection extends BaseConnection {
 
 	public function __construct( DSN $dsn ) {
 

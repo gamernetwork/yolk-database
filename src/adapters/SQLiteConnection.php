@@ -11,11 +11,11 @@
 
 namespace yolk\database\adapters;
 
-use yolk\database\AbstractConnection;
+use yolk\database\BaseConnection;
 use yolk\database\DSN;
 use yolk\database\exceptions\ConfigurationException;
 
-class SQLiteConnection extends AbstractConnection {
+class SQLiteConnection extends BaseConnection {
 
 	public function __construct( DSN $dsn ) {
 
