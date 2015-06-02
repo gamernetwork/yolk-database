@@ -25,6 +25,12 @@ class GenericConnectionManager implements ConnectionManager {
 	 */
 	protected $connections = [];
 
+	/**
+	 * Name of the default connection.
+	 * @var string
+	 */
+	protected $default = '';
+
 	public function add( $name, $connection ) {
 
 		$this->checkName($name);
@@ -33,6 +39,10 @@ class GenericConnectionManager implements ConnectionManager {
 			$this->connections[$name] = $connection;
 		else
 			$this->connections[$name] = $this->create($connection);
+
+		// no default connection so use the first one
+		if( !$this->default )
+			$this->default = $name;
 
 		return $this->connections[$name];
 
@@ -49,6 +59,21 @@ class GenericConnectionManager implements ConnectionManager {
 
 	public function has( $name ) {
 		return isset($this->connections[$name]);
+	}
+
+	public function getDefault() {
+		return $this->connections[$this->default];
+	}
+
+	public function setDefault( $name ) {
+
+		if( !isset($this->connections[$name]) )
+			throw new \InvalidArgumentException("Unknown Connection: {$name}");
+
+		$this->default = $name;
+
+		return $this;
+
 	}
 
 	/**
