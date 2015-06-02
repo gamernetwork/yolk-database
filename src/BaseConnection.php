@@ -105,6 +105,14 @@ abstract class BaseConnection implements DatabaseConnection, ProfilerAware {
 		return $this->pdo instanceof \PDO;
 	}
 
+	public function select() {
+		return new query\Select($this);
+	}
+
+	public function insert() {
+		return new query\Insert($this);
+	}
+
 	public function query( $statement, $params = [] ) {
 
 		$this->connect();
@@ -297,9 +305,27 @@ abstract class BaseConnection implements DatabaseConnection, ProfilerAware {
 		return $this->pdo->lastInsertId($name);
 	}
 
-	public function escape( $value, $type = \PDO::PARAM_STR ) {
+	public function quote( $value, $type = \PDO::PARAM_STR ) {
 		$this->connect();
 		return $this->pdo->quote($value, $type);
+	}
+
+	public function quoteIdentifier( $name ) {
+
+		$name = trim($name);
+
+        if( $name == '*' )
+            return $name;
+
+		// ANSI-SQL (everything else) says to use double quotes to quote identifiers
+        $char = '"';
+
+		// MySQL uses backticks cos it's special
+		if( $this->dsn->isMySQL() )
+        	$char = '`';
+
+		return $char. $name. $char;
+
 	}
 
 	/**
