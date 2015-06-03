@@ -66,7 +66,6 @@ abstract class BaseQuery {
 	}
 
 	public function __toString() {
-		return implode("\n", $this->compile());
 		return d(implode("\n", $this->compile()), $this->params);
 	}
 
@@ -86,9 +85,10 @@ abstract class BaseQuery {
 		}
 		// do parameter binding
 		else {
-			$param = $this->getParameterName($column, $operator);
-			$this->params[$param] = $value;
-			$value = ":{$param}";
+			$value = $this->bindParam(
+				$this->getParameterName($column, $operator),
+				$value
+			);
 		}
 
 		$this->where[] = [$this->quoteIdentifier($column), $operator, $value];
@@ -120,7 +120,7 @@ abstract class BaseQuery {
 	}
 
 	/**
-	 * Generate a SQL string
+	 * Generate a SQL string as an array.
 	 * @return array
 	 */
 	abstract protected function compile();
@@ -159,15 +159,20 @@ abstract class BaseQuery {
 
 		$sql = [];
 
-		if( $this->limit ) {
-			$sql[] = "LIMIT :limit OFFSET :offset";
-			$this->params['limit']  = $this->limit;
-			$this->params['offset'] = $this->offset;
-		}
-		elseif( $this->offset ) {
-			$sql[] = "LIMIT :limit OFFSET :offset";
-			$this->params['limit']  = PHP_INT_MAX;
-			$this->params['offset'] = $this->offset;
+		$limit  = $this->limit;
+		$offset = $this->offset;
+
+		if( $limit || $offset ) {
+
+			if( !$limit )
+				$limit = PHP_INT_MAX;
+
+			$sql[] = sprintf(
+				"LIMIT %s OFFSET %s",
+				$this->bindParam('_limit', $limit),
+				$this->bindParam('_offset', $offset)
+			);
+
 		}
 
 		return $sql;
@@ -244,6 +249,23 @@ abstract class BaseQuery {
 			$name .= '_'. $suffixes[$operator];
 
 		return $name;
+
+	}
+
+	/**
+	 * Add a parameter and return the placeholder to be inserted into the query string.
+	 * @param  string $name
+	 * @param  mixed  $value
+	 * @return string
+	 */
+	protected function bindParam( $name, $value ) {
+
+		if( isset($this->params[$name]) )
+			throw new \LogicException("Parameter: {$name} has already been defined");
+
+		$this->params[$name] = $value;
+
+		return ":{$name}";
 
 	}
 

@@ -87,10 +87,6 @@ class Select extends BaseQuery {
 
 	}
 
-	/**
-	 * Generate a SQL string
-	 * @return string
-	 */
 	public function compile() {
 
 		$cols = $this->cols;

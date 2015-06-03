@@ -69,10 +69,6 @@ class Insert extends BaseQuery {
 
 	}
 
-	/**
-	 * Generate a SQL string
-	 * @return string
-	 */
 	protected function compile() {
 
 		$sql = [

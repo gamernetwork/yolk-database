@@ -113,6 +113,14 @@ abstract class BaseConnection implements DatabaseConnection, ProfilerAware {
 		return new query\Insert($this);
 	}
 
+	public function update() {
+		return new query\Update($this);
+	}
+
+	public function delete() {
+		return new query\Delete($this);
+	}
+
 	public function query( $statement, $params = [] ) {
 
 		$this->connect();
