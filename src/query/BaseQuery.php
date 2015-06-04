@@ -66,6 +66,7 @@ abstract class BaseQuery {
 	}
 
 	public function __toString() {
+		return implode("\n", $this->compile());
 		return d(implode("\n", $this->compile()), $this->params);
 	}
 
