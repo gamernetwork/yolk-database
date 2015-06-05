@@ -121,6 +121,19 @@ abstract class BaseConnection implements DatabaseConnection, ProfilerAware {
 		return new query\Delete($this);
 	}
 
+	public function prepare( $statement ) {
+
+		if( ! $statement instanceof \PDOStatement  ) {
+			$statement = trim($statement);
+			if( !isset($this->statements[$statement]) )
+				$this->statements[$statement] = $this->pdo->prepare($statement);
+			$statement = $this->statements[$statement];
+		}
+
+		return $statement;
+
+	}
+
 	public function query( $statement, $params = [] ) {
 
 		$this->connect();
@@ -333,24 +346,6 @@ abstract class BaseConnection implements DatabaseConnection, ProfilerAware {
         	$char = '`';
 
 		return $char. $name. $char;
-
-	}
-
-	/**
-	 * Create a prepared statement.
-	 * @param  \PDOStatement|string  $statement  an existing PDOStatement object or a SQL string.
-	 * @return \PDOStatement
-	 */
-	protected function prepare( $statement ) {
-
-		if( ! $statement instanceof \PDOStatement  ) {
-			$statement = trim($statement);
-			if( !isset($this->statements[$statement]) )
-				$this->statements[$statement] = $this->pdo->prepare($statement);
-			$statement = $this->statements[$statement];
-		}
-
-		return $statement;
 
 	}
 
