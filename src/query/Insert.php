@@ -20,15 +20,22 @@ use yolk\contracts\database\DatabaseConnection;
  */
 class Insert extends BaseQuery {
 
+	protected $ignore;
 	protected $into;
 	protected $columns;
 	protected $values;
 
 	public function __construct( DatabaseConnection $db ) {
 		parent::__construct($db);
+		$this->ignore  = false;
 		$this->into    = '';
 		$this->columns = [];
 		$this->values  = [];
+	}
+
+	public function ignore( $ignore = true ) {
+		$this->ignore = (bool) $ignore;
+		return $this;
 	}
 
 	public function into( $table ) {
@@ -72,7 +79,7 @@ class Insert extends BaseQuery {
 	protected function compile() {
 
 		$sql = [
-			"INSERT INTO {$this->into}",
+			($this->ignore ? 'INSERT IGNORE' : 'INSERT'). ' '. $this->into,
 			'('. implode(', ', $this->columns). ')',
 			'VALUES',
 		];
