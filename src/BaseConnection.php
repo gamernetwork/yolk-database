@@ -124,10 +124,16 @@ abstract class BaseConnection implements DatabaseConnection, ProfilerAware {
 	public function prepare( $statement ) {
 
 		if( ! $statement instanceof \PDOStatement  ) {
+
+			$this->connect();
+
 			$statement = trim($statement);
+
 			if( !isset($this->statements[$statement]) )
 				$this->statements[$statement] = $this->pdo->prepare($statement);
+
 			$statement = $this->statements[$statement];
+
 		}
 
 		return $statement;
