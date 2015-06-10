@@ -219,7 +219,7 @@ abstract class BaseQuery {
 
 		// not numeric so we need to escape all the values
 		if( !$numeric ) {
-			$values = array_map([$this->db, 'escape'], $values);
+			$values = array_map([$this->db, 'quote'], $values);
 		}
 			
 		return sprintf('(%s)', implode(', ', $values));
