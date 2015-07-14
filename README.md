@@ -1,5 +1,6 @@
-
 # Yolk Database
+
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/?branch=master)
 
 A simple database abstraction layer that provides a lightweight wrapper around PDO for ease-of-use.
 It currently supports MySQL, Postgres and SQLite.
