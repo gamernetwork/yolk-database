@@ -99,7 +99,7 @@ class Select extends BaseQuery {
 				($this->distinct ? 'SELECT DISTINCT' : 'SELECT'). ' '. $cols,
 				'FROM '. $this->from,
 			],
-			// TODO: joins
+			$this->compileJoins(),
 			$this->compileWhere(),
 			// TODO: group by
 			// TODO: having

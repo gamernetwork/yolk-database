@@ -27,6 +27,12 @@ abstract class BaseQuery {
 	protected $db;
 
 	/**
+	 * Array of join clauses.
+	 * @var array
+	 */
+	protected $joins;
+
+	/**
 	 * Array of where clauses.
 	 * @var array
 	 */
@@ -58,6 +64,7 @@ abstract class BaseQuery {
 
 	public function __construct( DatabaseConnection $db ) {
 		$this->db       = $db;
+		$this->joins    = [];
 		$this->where    = [];
 		$this->order    = [];
 		$this->offset   = 0;
@@ -68,6 +75,22 @@ abstract class BaseQuery {
 	public function __toString() {
 		return implode("\n", $this->compile());
 		return d(implode("\n", $this->compile()), $this->params);
+	}
+
+	public function innerJoin( $table, array $on ) {
+		$this->joins[] = ['INNER', $table, $on];
+		return $this;
+	}
+
+	public function leftJoin( $table, array $on ) {
+		$this->joins[] = ['LEFT', $table, $on];
+		return $this;
+	}
+
+	public function joinRaw( $sql, $parameters = [] ) {
+		$this->joins[] = $sql;
+		$this->params = array_merge($this->params, $parameters);
+		return $this;
 	}
 
 	public function where( $column, $operator, $value = null ) {
@@ -125,6 +148,37 @@ abstract class BaseQuery {
 	 * @return array
 	 */
 	abstract protected function compile();
+
+	protected function compileJoins() {
+
+		$sql = [];
+
+		foreach( $this->joins as $join ) {
+			if( is_array($join) ) {
+				list($type, $table, $on) = $join;
+				$join = sprintf("%s JOIN %s\nON %s", $type, $this->quoteIdentifier($table), $this->compileOn($on));
+			}
+			$sql[] = $join;
+		}
+
+		return $sql;
+
+	}
+
+	protected function compileOn( array $on ) {
+
+		$sql = [];
+
+		foreach( $on as $column => $value ) {
+			// if it's not a number or a quoted sring it much be an identifier, so quote it
+			if( !is_numeric($value) && !preg_match('/^\'.*\'$/', $value) )
+				$value = $this->quoteIdentifier($value);
+			$sql[] = sprintf("%s = %s", $this->quoteIdentifier($column), $value);
+		}
+
+		return implode("\nAND ", $sql);
+
+	}
 
 	protected function compileWhere() {
 
