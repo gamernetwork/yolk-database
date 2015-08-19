@@ -14,6 +14,7 @@ namespace yolk\database;
 use yolk\contracts\database\DatabaseConnection;
 use yolk\contracts\profiler\ProfilerAwareTrait;
 use yolk\contracts\profiler\ProfilerAware;
+use yolk\contracts\support\Dumpable;
 
 use yolk\database\exceptions\DatabaseException;
 use yolk\database\exceptions\ConnectionException;
@@ -24,7 +25,7 @@ use yolk\database\exceptions\TransactionException;
 /**
  * A wrapper for PDO that provides some handy extra functions and streamlines everything else.
  */
-abstract class BaseConnection implements DatabaseConnection, ProfilerAware {
+abstract class BaseConnection implements DatabaseConnection, ProfilerAware, Dumpable {
 
 	use ProfilerAwareTrait;
 
@@ -353,6 +354,11 @@ abstract class BaseConnection implements DatabaseConnection, ProfilerAware {
 
 		return $char. $name. $char;
 
+	}
+
+	public function dump( $dumper = '\\yolk\\debug\\TextDumper', $depth = 1 ) {
+		if( $depth > 1 )
+			return $this->dsn->toString();
 	}
 
 	/**
