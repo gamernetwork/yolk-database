@@ -14,11 +14,12 @@ namespace yolk\database\query;
 use yolk\Yolk;
 
 use yolk\contracts\database\DatabaseConnection;
+use yolk\contracts\database\Query;
 
 /**
  * Generic.
  */
-abstract class BaseQuery {
+abstract class BaseQuery implements Query {
 
 	/**
 	 * Database connection the query is associated with.
