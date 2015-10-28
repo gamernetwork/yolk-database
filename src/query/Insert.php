@@ -43,22 +43,30 @@ class Insert extends BaseQuery {
 		return $this;
 	}
 
-	public function item( array $item ) {
-
-		$values = [];
-		foreach( $item as $column => $value ) {
+	public function cols( array $columns ) {
+		$this->columns = [];
+		foreach( $columns as $column ) {
 			$this->columns[] = $this->quoteIdentifier($column);
-			$values[] = ":{$column}";
 		}
-		$this->values[] = $values;
-
-		$this->params = $item;
-
-		return $this;
-
 	}
 
-	public function multipleItems( array $items ) {
+	public function item( array $item ) {
+
+		if( !$this->columns )
+			$this->cols(array_keys($item));
+
+		$values = [];
+		$index  = count($this->values) + 1;
+
+		foreach( $item as $column => $value ) {
+			$column = "{$column}_{$index}";
+			$values[] = ":{$column}";
+			$this->params[$column] = $value;
+		}
+
+		$this->values[] = $values;
+
+		return $this;
 
 	}
 
@@ -85,8 +93,12 @@ class Insert extends BaseQuery {
 		];
 
 		foreach( $this->values as $list ) {
-			$sql[] = sprintf('(%s)', implode(', ', $list));
+			$sql[] = sprintf('(%s),', implode(', ', $list));
 		}
+
+		// remove comma from last values item
+		$tmp = substr(array_pop($sql), 0, -1);
+		array_push($sql, $tmp);
 
 		return $sql;
 
