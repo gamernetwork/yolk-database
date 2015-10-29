@@ -118,6 +118,10 @@ abstract class BaseConnection implements DatabaseConnection, ProfilerAware, Dump
 		return new query\Update($this);
 	}
 
+	public function replace() {
+		return new query\Replace($this);
+	}
+
 	public function delete() {
 		return new query\Delete($this);
 	}
