@@ -11,21 +11,12 @@
 
 namespace yolk\database\query;
 
-use yolk\Yolk;
-
-use yolk\contracts\database\DatabaseConnection;
-
 use yolk\database\exceptions\QueryException;
 
 /**
- * Generic insert query.
+ * Generic replace query.
  */
 class Replace extends Insert {
-
-	protected $ignore;
-	protected $into;
-	protected $columns;
-	protected $values;
 
 	public function ignore( $ignore = true ) {
 		throw new QueryException('IGNORE flag not valid for REPLACE queries.');
@@ -37,20 +28,10 @@ class Replace extends Insert {
 
 	protected function compile() {
 
-		$sql = [
-			'REPLACE'. ' '. $this->into,
-			'('. implode(', ', $this->columns). ')',
-			'VALUES',
-		];
-
-		foreach( $this->values as $list ) {
-			$sql[] = sprintf('(%s),', implode(', ', $list));
-		}
-
-		// remove comma from last values item
-		$tmp = substr(array_pop($sql), 0, -1);
-		array_push($sql, $tmp);
-
+		$sql = parent::compile();
+		
+		$sql[0] = preg_replace('/^INSERT( IGNORE)?/', 'REPLACE', $sql[0]);
+		
 		return $sql;
 
 	}
