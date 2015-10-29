@@ -11,8 +11,6 @@
 
 namespace yolk\database\query;
 
-use yolk\Yolk;
-
 use yolk\contracts\database\DatabaseConnection;
 
 /**
