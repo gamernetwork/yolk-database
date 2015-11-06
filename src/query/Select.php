@@ -21,12 +21,17 @@ class Select extends BaseQuery {
 	protected $cols;
 	protected $distinct;
 	protected $from;
+	protected $group;
+	protected $having;
+
 
 	public function __construct( DatabaseConnection $db ) {
 		parent::__construct($db);
 		$this->cols     = [];
 		$this->distinct = false;
 		$this->from     = '';
+		$this->group    = [];
+		$this->having   = [];
 	}
 
 	public function cols( $columns = ['*'] ) {
@@ -73,9 +78,26 @@ class Select extends BaseQuery {
 		return $this;
 	}
 
+	public function groupBy( $columns ) {
+
+		if( !is_array($columns) )
+			$columns = [$columns];
+
+		foreach( $columns as $column ) {
+			$this->group[] = $this->quoteIdentifier($column);
+		}
+
+		return $this;
+
+	}
+
+	public function having( $having ) {
+		$this->having = [$having];
+	}
+
 	public function __call( $method, $args ) {
 
-		if( !in_array($method, ['getOne', 'getCol', 'getRow', 'getAssoc', 'getAll']) ) 
+		if( !in_array($method, ['getOne', 'getCol', 'getRow', 'getAssoc', 'getAll']) )
 			throw new \BadMethodCallException("Unknown Method: {$method}");
 
 		return $this->db->$method(
@@ -99,8 +121,8 @@ class Select extends BaseQuery {
 			],
 			$this->compileJoins(),
 			$this->compileWhere(),
-			// TODO: group by
-			// TODO: having
+			$this->compileGroupBy(),
+			$this->having,
 			$this->compileOrderBy(),
 			$this->compileOffsetLimit()
 		);
@@ -110,7 +132,7 @@ class Select extends BaseQuery {
 	protected function compileCols( array $cols ) {
 
 		foreach( $cols as &$col ) {
-			
+
 			// if column is an array is should have two elements
 			// the first being the column name, the second being the alias
 			if( is_array($col) ) {
@@ -128,6 +150,17 @@ class Select extends BaseQuery {
 		}
 
 		return implode(', ', $cols);
+
+	}
+
+	protected function compileGroupBy() {
+
+		$sql = [];
+
+		if( $this->group )
+			$sql[] = 'GROUP BY '. implode(', ', $this->group);
+
+		return $sql;
 
 	}
 

@@ -142,6 +142,18 @@ abstract class BaseQuery implements Query {
 		return $this;
 	}
 
+	public function getParameters() {
+		return $this->params;
+	}
+
+	public function setParameters( array $params, $replace = false ) {
+		if( $replace )
+			$this->params = $params;
+		else
+			$this->params = array_merge($this->params, $params);
+		return $this;
+	}
+
 	/**
 	 * Generate a SQL string as an array.
 	 * @return array
