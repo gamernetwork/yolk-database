@@ -128,9 +128,14 @@ class DatabaseTree implements Tree {
 
 	public function insertNode( $id, $parent_id = 0 ) {
 
+		// determine if a database transaction is currently active
+		// if not we'll start one
+		$transaction = $this->db->inTransaction();
+
 		try {
 
-			$this->db->begin();
+			if( !$transaction )
+				$this->db->begin();
 
 			if( $parent_id ) {
 
@@ -158,11 +163,13 @@ class DatabaseTree implements Tree {
 				array($parent['rgt'], $parent['rgt'] + 1, $id)
 			);
 
-			$this->db->commit();
+			if( !$transaction )
+				$this->db->commit();
 
 		}
 		catch( \Exception $e ) {
-			$this->db->rollback();
+			if( !$transaction )
+				$this->db->rollback();
 			throw $e;
 		}
 
@@ -175,9 +182,14 @@ class DatabaseTree implements Tree {
 		if( !$node = $this->findNodeById($id) )
 			return $this;
 
+		// determine if a database transaction is currently active
+		// if not we'll start one
+		$transaction = $this->db->inTransaction();
+
 		try {
 
-			$this->db->begin();
+			if( !$transaction )
+				$this->db->begin();
 
 			$diff = (int) $node['rgt'] - (int) $node['lft'] + 1;
 
@@ -187,11 +199,13 @@ class DatabaseTree implements Tree {
 			$this->db->execute("UPDATE {$this->table_name} SET lft = lft - ? WHERE lft >= ?", array($diff, $node['lft']));
 			$this->db->execute("UPDATE {$this->table_name} SET rgt = rgt - ? WHERE rgt >= ?", array($diff, $node['rgt']));
 
-			$this->db->commit();
+			if( !$transaction )
+				$this->db->commit();
 
 		}
 		catch( \Exception $e ) {
-			$this->db->rollback();
+			if( !$transaction )
+				$this->db->rollback();
 			throw $e;
 		}
 
@@ -208,9 +222,14 @@ class DatabaseTree implements Tree {
 		if( !$node || !$parent )
 			return $this;
 
+		// determine if a database transaction is currently active
+		// if not we'll start one
+		$transaction = $this->db->inTransaction();
+
 		try {
 
-			$this->db->begin();
+			if( !$transaction )
+				$this->db->begin();
 
 			$diff = $node['rgt'] - $node['lft'] + 1;
 
@@ -244,11 +263,13 @@ class DatabaseTree implements Tree {
 			// ensure the correct parent is assigned - may have already by done by calling function
 			$this->db->execute("UPDATE {$this->table_name} SET parent_id = ? WHERE id = ?", array($parent_id, $id));
 
-			$this->db->commit();
+			if( !$transaction )
+				$this->db->commit();
 
 		}
 		catch( \Exception $e ) {
-			$this->db->rollback();
+			if( !$transaction )
+				$this->db->rollback();
 			throw $e;
 		}
 
