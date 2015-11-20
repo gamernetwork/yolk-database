@@ -120,6 +120,17 @@ abstract class BaseQuery implements Query {
 
 	}
 
+	public function whereArray( array $where ) {
+
+		foreach( $where as $k => $v ) {
+			$operator = is_array($v) ? 'IN' : '=';
+			$this->where($k, $operator, $v);
+		}
+
+		return $this;
+
+	}
+
 	public function whereRaw( $sql, $parameters = [] ) {
 		$this->where[] = $sql;
 		$this->params = array_merge($this->params, $parameters);
