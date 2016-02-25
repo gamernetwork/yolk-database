@@ -360,6 +360,28 @@ abstract class BaseConnection implements DatabaseConnection, ProfilerAware, Dump
 
 	}
 
+	/**
+	 * Execute a raw SQL string and return the number of affected rows.
+	 * Primarily used for DDL queries. Do not use this with:
+	 * - Anything (data/parameters/etc) that comes from userland
+	 * - Select queries - the answer will always be 0 as no rows are affected.
+	 * - Everyday queries - use query() or execute()
+	 * @param  string $sql  the SQL statement to exexcute
+	 * @return integer   the number of rows affected by the statement
+	 */
+	public function rawExec( $sql ) {
+
+		$this->connect();
+
+		try {
+			return $this->pdo->exec($sql);
+		}
+		catch( \PDOException $e ) {
+			throw new QueryException($e->getMessage(), $e->getCode(), $e);
+		}
+
+	}
+
 	public function dump( $dumper = '\\yolk\\debug\\TextDumper', $depth = 1 ) {
 		if( $depth > 1 )
 			return $this->dsn->toString();
