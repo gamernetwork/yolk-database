@@ -201,14 +201,91 @@ $db->inTransaction();
 OO query generators are available for `SELECT`, `INSERT`, `UPDATE` and `DELETE`.
 An instance of each can be created by calling the corresponding method on the `DatabaseConnection`.
 
+### Select
 ```php
-
 $db->select()
-   ->distinct()		// accepts true (default) or false as argument
-   ->cols('*')		// comma-separated list or array of column names
-   ->from('table')		// table to select from
-   ->innerJoin('other_table', [])	// 
-   ->where()		//
-   ->groupBy()		//
-   ->orderBy()		//
+
+   // accepts true (default) or false as argument
+   ->distinct()
+
+   // comma-separated list or array of column names
+   ->cols('*')
+
+   // table to select from
+   ->from('table')
+
+   // append a where clause - column, operator, value
+   // multiple calls add additional clauses
+   ->where('created', '>=', '2016-01-01')		
+
+   // with two arguments, operator is assumed to be '='
+   ->where('id', 123)
+
+   // array of columns to group by
+   ->groupBy(['type', 'status'])
+
+   // second parameter specifies ascending (true) or descending (false)
+   // multiple calls add additional clauses
+   ->orderBy('column', true)
+
+   // return result as associative array
+   // can also use the other fetch* methods defined by DatabaseConnection
+   ->fetchAssoc();
+```
+
+### Insert
+```php
+$db->insert()
+
+   // accepts true (default) or false as argument
+   ->ignore()
+
+   // table to insert to
+   ->into('table')
+
+   // item to insert as an associative array of column names/values
+   ->item([
+       'col1' => 'value1',
+       'col2' => 'value1',
+   ])
+
+   // run the query
+   ->execute();
+```
+
+### Update
+```php
+$db->insert()
+
+   // accepts true (default) or false as argument
+   ->ignore()
+
+   // table to insert to
+   ->into('table')
+
+   // columns to update as an associative array of column names/values
+   ->set([
+       'col1' => 'value1',
+       'col2' => 'value1',
+   ])
+
+   // same usage as for SELECT
+   ->where('id', 123)
+
+   // run the query
+   ->execute();
+```
+
+### Delete
+```php
+$db->delete()
+
+   // table to insert to
+   ->from('table')
+
+   // same usage as for SELECT
+   ->where('id', 123)
+
+   // run the query
+   ->execute();
 ```
