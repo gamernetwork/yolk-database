@@ -1,19 +1,22 @@
 # Yolk Database
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/?branch=develop)
 
 A simple database abstraction layer that provides a lightweight wrapper around PDO for ease-of-use.
 It currently supports MySQL, Postgres and SQLite.
 
+Also included are simple query generators and a class for handling a tree structure within a relational
+database via modified preorder tree traversal.
+
 ## Requirements
 
-This library requires only PHP 5.4 or later and the Yolk Contracts package (```gamernetwork/yolk-contracts```).
+This library requires only PHP 5.4 or later and the Yolk Contracts package (`gamernetwork/yolk-contracts`).
 
 ## Installation
 
-It is installable and autoloadable via Composer as ```gamernetwork/yolk-database```.
+It is installable and autoloadable via Composer as `gamernetwork/yolk-database`.
 
-Alternatively, download a release or clone this repository, and add the \yolk\database namespace to an autoloader.
+Alternatively, download a release or clone this repository, and add the `\yolk\database` namespace to an autoloader.
 
 ## License
 
@@ -132,12 +135,11 @@ $db->getCol($statement, $params = []);
 
 // Execute a query and return the value of the first column in the first array
 $db->getOne($statement, $params = []);
-
 ```
 
 The above methods accept the following parameters:
-* ```$statement```: a ```PDO_Statement``` instance or a SQL string
-* ```$params```: an array of parameters to bind to the statement
+* `$statement`: a `PDO_Statement` instance or a SQL string
+* `$params`: an array of parameters to bind to the statement
 
 Query parameters may be bound name:
 ```php
@@ -168,20 +170,45 @@ $user_id = $db->getOne("SELECT id FROM user WHERE login = ?", 'jimbob');
 $id = $db->insertId($name = '');
 
 // Escape/quote a value for use in a query string
-$db->escape($value, $type = \PDO::PARAM_STR)
+$db->escape($value, $type = \PDO::PARAM_STR);
+
+// Escape/quote an identifier name (table, column, etc)
+// Allows reserved words to be used as identifiers.
+$db->quoteIdentifier('key');
+
+// Execute a raw SQL string and return the number of affected rows.
+// Primarily used for DDL queries
+$db->rawExec($sql);
 ```
 
 ## Transactions
 ```php
 // Begin a transaction
-$db->begin()
+$db->begin();
 
 // Commit the current transaction
-$db->commit()
+$db->commit();
 
 // Rollback the current transaction
-$db->rollback()
+$db->rollback();
 
 // Determines if a transaction is currently active
-$db->inTransaction()
+$db->inTransaction();
+```
+
+## Query Generators
+
+OO query generators are available for `SELECT`, `INSERT`, `UPDATE` and `DELETE`.
+An instance of each can be created by calling the corresponding method on the `DatabaseConnection`.
+
+```php
+
+$db->select()
+   ->distinct()		// accepts true (default) or false as argument
+   ->cols('*')		// comma-separated list or array of column names
+   ->from('table')		// table to select from
+   ->innerJoin('other_table', [])	// 
+   ->where()		//
+   ->groupBy()		//
+   ->orderBy()		//
 ```
