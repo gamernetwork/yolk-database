@@ -52,13 +52,13 @@ $updated = $db->execute(
 A DSN is an object that specifies the properties of a database connection.
 
 Common properties are:
-* type - the type of database to connect to (mysql, postgres or sqlite)
-* host - the host to connect to
-* port - the port number to connect on
-* user - the user to authenticate as
-* pass - the user's password
-* db - the name of the database schema to connect to
-* options - an array of driver specific options
+* `type` - the type of database to connect to (mysql, postgres or sqlite)
+* `host` - the host to connect to
+* `port` - the port number to connect on
+* `user` - the user to authenticate as
+* `pass` - the user's password
+* `db` - the name of the database schema to connect to
+* `options` - an array of driver specific options
 
 DSNs can be created by passing an array of properties to the constructor:
 
@@ -170,7 +170,7 @@ $user_id = $db->getOne("SELECT id FROM user WHERE login = ?", 'jimbob');
 $id = $db->insertId($name = '');
 
 // Escape/quote a value for use in a query string
-$db->escape($value, $type = \PDO::PARAM_STR);
+$db->quote($value, $type = \PDO::PARAM_STR);
 
 // Escape/quote an identifier name (table, column, etc)
 // Allows reserved words to be used as identifiers.
