@@ -1,3 +1,6 @@
+---
+currentMenu: database
+---
 # Yolk Database
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/?branch=develop)
@@ -116,7 +119,8 @@ $stmt = $db->query($statement, $params = []);
 // Execute a query and return the number of affected rows
 $rows = $db->execute($statement, $params = []);
 
-// Execute a query and return all matching data
+// Execute a query and return all matching data as an array of associative arrays of matching rows
+// Each row array has column names as keys
 $db->getAll($statement, $params = []);
 
 // Execute a query and return all matching data as an associative array,
