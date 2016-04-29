@@ -1,6 +1,3 @@
----
-currentMenu: database
----
 # Yolk Database
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/gamernetwork/yolk-database/?branch=develop)
